@@ -97,6 +97,7 @@ INSTALLED_APPS = [
     'watchman',
     'api',
     'web',
+    'ecsmanage'
 ]
 
 # For allauth
@@ -243,3 +244,22 @@ if not DEBUG:
     }
     import rollbar
     rollbar.init(**ROLLBAR)
+
+ECSMANAGE_ENVIRONMENTS = {
+    'staging': {
+        'TASK_DEFINITION_NAME': 'StagingAppCLI',
+        'CLUSTER_NAME': 'ecsStagingCluster',
+        'LAUNCH_TYPE': 'FARGATE',
+        'SECURITY_GROUP_TAGS': {
+            'Name': 'sgAppEcsService',
+            'Environment': 'Staging',
+            'Project': 'OpenApparelRegistry'
+        },
+        'SUBNET_TAGS': {
+            'Name': 'PrivateSubnet',
+            'Environment': 'Staging',
+            'Project': 'OpenApparelRegistry'
+        },
+        'AWS_REGION': 'eu-west-1',
+    },
+} 
