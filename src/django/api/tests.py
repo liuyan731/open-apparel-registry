@@ -23,9 +23,9 @@ from api.models import (Facility, FacilityList, FacilityListItem,
                         FacilityMatch, FacilityAlias, Contributor, User,
                         RequestLog, DownloadLog, FacilityLocation)
 from api.oar_id import make_oar_id, validate_oar_id
+from api.matching import match_facility_list_items
 from api.processing import (parse_facility_list_item,
-                            geocode_facility_list_item,
-                            match_facility_list_items)
+                            geocode_facility_list_item)
 from api.geocoding import (create_geocoding_params,
                            format_geocoded_address_data,
                            geocode_address)
