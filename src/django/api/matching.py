@@ -1,4 +1,5 @@
 import dedupe
+import logging
 import os
 import re
 
@@ -9,6 +10,8 @@ from django.db.models import Q
 from unidecode import unidecode
 
 from api.models import Facility, FacilityList, FacilityListItem, Version
+
+logger = logging.getLogger(__name__)
 
 
 def clean(column):
@@ -91,11 +94,13 @@ def get_messy_items_for_training():
     ).extra(
             select={'country': 'country_code'}).values(
                 'id', 'country', 'name', 'address')
+    records = [record for (i, record) in enumerate(facility_list_item_set)
+               if i % 5 == 0]
     return {str(i['id']): {k: clean(i[k]) for k in i if k != 'id'}
-            for i in facility_list_item_set}
+            for i in records}
 
 
-def train_gazetteer(messy, canonical):
+def train_gazetteer(messy, canonical, model_settings=None, should_index=False):
     """
     Train and return a dedupe.Gazetteer using the specified messy and canonical
     dictionaries. The messy and canonical objects should have the same
@@ -106,11 +111,8 @@ def train_gazetteer(messy, canonical):
 
     Reads a training.json file containing positive and negative matches.
     """
-    settings_file = os.path.join(settings.BASE_DIR, 'api', 'data',
-                                 'gazetteer_model_settings')
-    if os.path.exists(settings_file):
-        with open(settings_file, 'rb') as sf:
-            gazetteer = dedupe.StaticGazetteer(sf)
+    if model_settings:
+        gazetteer = dedupe.StaticGazetteer(model_settings)
     else:
         fields = [
             {'field': 'country', 'type': 'Exact'},
@@ -124,24 +126,22 @@ def train_gazetteer(messy, canonical):
                                      'training.json')
         with open(training_file) as tf:
             gazetteer.readTraining(tf)
-        training_start = datetime.now()
         gazetteer.train()
-        training_duration = datetime.now() - training_start
-        print('training_duration ', training_duration)
 
-        with open(settings_file, 'wb') as sf:
-            gazetteer.writeSettings(sf)
-
-    index_start = datetime.now()
-    gazetteer.index(canonical)
-    index_duration = datetime.now() - index_start
-    print('index_duration ', index_duration)
-
-    if isinstance(gazetteer, dedupe.Gazetteer):
-        gazetteer.cleanupTraining()
-        # The gazetteer example in the dedupeio/dedupe-examples repository
-        # called index both after training and after calling cleanupTraining.
+    if should_index:
+        index_start = datetime.now()
+        logger.info('Indexing started')
         gazetteer.index(canonical)
+        index_duration = datetime.now() - index_start
+        logger.info('Indexing finished ({})'.format(index_duration))
+        logger.info('Cleanup training')
+
+        if isinstance(gazetteer, dedupe.Gazetteer):
+            gazetteer.cleanupTraining()
+            # The gazetteer example in the dedupeio/dedupe-examples repository
+            # called index both after training and after calling
+            # cleanupTraining.
+            gazetteer.index(canonical)
 
     return gazetteer
 

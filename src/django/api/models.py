@@ -1362,3 +1362,26 @@ class FacilityLocation(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class Matcher(models.Model):
+    """
+    Stores trained Dedupe models
+    """
+    is_active = models.BooleanField(
+        null=False,
+        default=True,
+        help_text=('True if the matcher should be used. One only one matcher '
+                   'should be active')
+    )
+    model_settings = models.BinaryField(
+        null=False,
+        blank=False,
+        help_text=('A trained model saved by calling `writeSettings`.')
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        active = 'Active' if self.is_active else 'Inactive'
+        return '{} {} ({})'.format(self.created_at, active, self.id)

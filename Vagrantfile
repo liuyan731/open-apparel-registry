@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |vb|
     vb.cpus = 2
     vb.gui = false
-    vb.memory = 4096 # React ran out of memory at 1024
+    vb.memory = 14336 # React ran out of memory at 1024
   end
 
   # React development server
