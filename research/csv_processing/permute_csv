@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+import sys
+import csv
+
+# Read a 5-column CSV suitable for contributing to OAR on standard input and
+# write a CSV to standard output where each row is repeated N times where N is
+# the first and only command line argument passed to the script.
+
+# USAGE
+#
+# permute_csv 4 < facility_list.csv > facility_list_permuted.csv
+
+csv_reader = csv.reader(sys.stdin, delimiter=',')
+next(csv_reader)
+csv_writer = csv.writer(sys.stdout)
+csv_writer.writerow(['country', 'name', 'address', 'lat', 'lng'])
+
+permutations = int(sys.argv[1]) if len(sys.argv) > 1 else 4
+
+for row in csv_reader:
+    csv_writer.writerow(row)
+    for p in range(2, permutations + 2):
+        p_row = [
+            row[0],
+            '{} VERSION {}'.format(row[1], p),
+            '{} VERSION {}'.format(row[2], p),
+            float(row[3]) + (0.00001 * p),
+            float(row[4]) + (0.00001 * p),
+        ]
+        csv_writer.writerow(p_row)
