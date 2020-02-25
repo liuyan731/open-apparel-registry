@@ -19,9 +19,10 @@ export default function useUpdateLeafletMapImperatively(
         shouldPanMapToFacilityDetails,
         isVectorTileMap = false,
         extent,
+        zoomToSearch,
     } = {},
 ) {
-    console.log({oarID, data, extent})
+
     const mapRef = useRef(null);
 
     const [
@@ -29,14 +30,15 @@ export default function useUpdateLeafletMapImperatively(
         setCurrentExtent,
     ] = useState(extent);
     useEffect(() => {
-        if (extent != null && currentExtent !== extent) {
+        if (zoomToSearch && extent != null && currentExtent !== extent) {
+
             const leafletMap = get(mapRef, 'current.leafletElement', null);
 
             if (leafletMap) {
                 leafletMap.fitBounds([
                     [extent[3], extent[2]],
                     [extent[1], extent[0]],
-                ]);
+                ], { maxZoom: detailsZoomLevel });
             }
 
             setCurrentExtent(extent);
