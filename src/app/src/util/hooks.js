@@ -18,9 +18,32 @@ export default function useUpdateLeafletMapImperatively(
         data,
         shouldPanMapToFacilityDetails,
         isVectorTileMap = false,
+        extent,
     } = {},
 ) {
+    console.log({oarID, data, extent})
     const mapRef = useRef(null);
+
+    const [
+        currentExtent,
+        setCurrentExtent,
+    ] = useState(extent);
+    useEffect(() => {
+        if (extent != null && currentExtent !== extent) {
+            const leafletMap = get(mapRef, 'current.leafletElement', null);
+
+            if (leafletMap) {
+                leafletMap.fitBounds([
+                    [extent[3], extent[2]],
+                    [extent[1], extent[0]],
+                ]);
+            }
+
+            setCurrentExtent(extent);
+        }
+    }, [
+        extent
+    ]);
 
     // Reset the map state when the reset button is clicked.
     const [
