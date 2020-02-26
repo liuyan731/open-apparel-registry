@@ -1112,7 +1112,7 @@ class FacilityManager(models.Manager):
                         contributor__in=contributors).values_list(
                             'facilitylistitem__facility', flat=True)))
 
-        if boundaries is not None and len(boundaries):
+        if boundaries is not None and len(boundaries) > 2:
             formatted_boundaries = []
             for point in boundaries:
                 point_coordinates = point.split(',')
