@@ -14,6 +14,7 @@ import Button from './Button';
 import VectorTileFacilitiesLayer from './VectorTileFacilitiesLayer';
 import VectorTileFacilityGridLayer from './VectorTileFacilityGridLayer';
 import VectorTileGridLegend from './VectorTileGridLegend';
+import PolygonalSearchControl from './PolygonalSearchControl';
 
 import { COUNTRY_CODES } from '../util/constants';
 
@@ -108,6 +109,7 @@ function VectorTileFacilitiesMap({
             worldCopyJump
             onZoomEnd={handleZoomEnd}
         >
+            <PolygonalSearchControl />
             <ReactLeafletGoogleLayer
                 googleMapsLoaderConf={{
                     KEY: GOOGLE_CLIENT_SIDE_API_KEY,
