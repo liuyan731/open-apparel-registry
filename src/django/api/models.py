@@ -1112,13 +1112,13 @@ class FacilityManager(models.Manager):
                         contributor__in=contributors).values_list(
                             'facilitylistitem__facility', flat=True)))
 
-        if boundaries is not None:
+        if boundaries is not None and len(boundaries):
             formatted_boundaries = []
             for point in boundaries:
                 point_coordinates = point.split(',')
                 formatted_boundaries.append((
-                    int(point_coordinates[1]),
-                    int(point_coordinates[0]),
+                    float(point_coordinates[1]),
+                    float(point_coordinates[0]),
                 ))
             boundaries = formatted_boundaries
             # If the boundaries passed are not closed, close them
